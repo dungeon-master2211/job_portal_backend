@@ -9,7 +9,7 @@ const registerUser = catchAsyncError(async(req:Request,res:Response,next:NextFun
     const body = await req.body
     const isExist = await User.findOne({email:body.email})
     if(isExist) return res.status(400).send({
-        error:'User already exist',
+        message:'User already exist',
         status:false
     })
     const givenPwd = body.password
@@ -26,22 +26,25 @@ const loginUser = catchAsyncError(async(req:Request,res:Response,next:NextFuncti
     const body = await req.body
     const exist:user|null = await User.findOne({email:body.email})
     if(!exist) return res.status(400).send({
-        error:'User does not exist',
+        message:'User does not exist',
         status:false
     })
 
     const isPasswordMatch = await bcrypt.compare(body.password,exist.password)
     if(!isPasswordMatch) return res.status(400).send({
-        error:'Email or Password not correct',
+        message:'Email or Password not correct',
         status:false
     })
     
     const SECRET:string = process.env.secret || 'hgdfjhshfjggewgyuegyuewgytuewytew6tr7ew6t786t'
     const token = await jwt.sign({
         data: exist.id
-      }, SECRET , { expiresIn: '1h' });
+      }, SECRET , { expiresIn: '72h' });
     
-    return res.cookie('jobportal',token).send({
+    return res.cookie('jobportal',token,{
+        sameSite:"none",
+        secure:true
+    }).send({
         id:exist.id,
         name:exist.name,
         role:exist.role
@@ -49,10 +52,15 @@ const loginUser = catchAsyncError(async(req:Request,res:Response,next:NextFuncti
 })
 
 const logoutUser = catchAsyncError(async(req:Request,res:Response,next:NextFunction)=>{
-    return res.clearCookie('jobportal').send({
+    return res.clearCookie('jobportal',{
+        sameSite:"none",
+        secure:true
+    }).send({
         message:'logged out',
         status:true
     })
 })
+
+
 
 export {registerUser,loginUser,logoutUser}

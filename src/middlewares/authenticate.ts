@@ -7,12 +7,12 @@ const authenticateUser = catchAsyncError(async(req:UserRequest,res:Response,next
     const cookie  = req.cookies
     console.log(cookie)
     if(!cookie) return res.status(404).send({
-        error:'Please Login',
+        message:'Please Login',
         status:false
     })
     const ISCOOKIEEXIST = cookie['jobportal']
     if(!ISCOOKIEEXIST) return res.status(404).send({
-        error:'Please Login',
+        message:'Please Login',
         status:false
     })
     const SECRET = process.env.secret||''
@@ -22,22 +22,57 @@ const authenticateUser = catchAsyncError(async(req:UserRequest,res:Response,next
     }
     catch(e){
         return res.status(404).send({
-            error:'Please Login',
+            message:'Please Login',
             status:false
         })
     }
     const user = await User.findById(id.data) 
     if(!user) return res.status(404).send({
-        error:'User does not exist',
+        message:'User does not exist',
         status:false
     })
     if(user.role!=='user') return res.status(404).send({
-        error:'Not Authorize to Apply',
+        message:'Not Authorize to Apply',
         status:false
     })
     req.user = user
     next()
 })
 
-
-export {authenticateUser}
+const authenticateSession = catchAsyncError(async(req:UserRequest,res:Response,next:NextFunction)=>{
+    const cookie  = req.cookies
+    console.log(cookie)
+    if(!cookie) return res.status(404).send({
+        message:'Please Login',
+        status:false
+    })
+    const ISCOOKIEEXIST = cookie['jobportal']
+    if(!ISCOOKIEEXIST) return res.status(404).send({
+        message:'Please Login',
+        status:false
+    })
+    const SECRET = process.env.secret||''
+    try{
+        var id = jwt.verify(ISCOOKIEEXIST,SECRET) as jwt.JwtPayload
+        
+    }
+    catch(e){
+        return res.status(404).send({
+            message:'Please Login',
+            status:false
+        })
+    }
+    const user = await User.findById(id.data) 
+    if(!user) return res.status(404).send({
+        message:'User does not exist',
+        status:false
+    })
+    req.user = user
+    return res.status(200).send({
+        status:true,
+        id:user.id,
+        name:user.name,
+        role:user.role
+    })
+})
+export {authenticateUser, authenticateSession}

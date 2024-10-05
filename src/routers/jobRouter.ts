@@ -1,5 +1,5 @@
 import express from "express"
-import {postJobs,viewJobs,viewJobsById,applyToJob} from "../controllers/jobController"
+import {postJobs,viewJobs,viewJobsById,applyToJob, myAppliedJobs, viewApplicants, downloadResume, applicationAction} from "../controllers/jobController"
 import {validateJobPostBody} from "../middlewares/schemaValidator"
 import {authorizeRecruiter} from "../middlewares/authorization"
 import { authenticateUser } from "../middlewares/authenticate"
@@ -25,4 +25,8 @@ router.post('/post_job',authorizeRecruiter,validateJobPostBody,postJobs)
 router.get('/jobs',viewJobs)
 router.get('/my_jobs/:id',authorizeRecruiter,viewJobsById)
 router.post('/apply_to_job',authenticateUser,upload.single('resume'),applyToJob)
+router.get('/my_applied_job',authenticateUser,myAppliedJobs)
+router.get('/view_applicants/:id',authorizeRecruiter,viewApplicants)
+router.get('/download_resume',downloadResume),
+router.get('/change_status',authorizeRecruiter,applicationAction)
 export default router

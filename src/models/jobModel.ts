@@ -33,6 +33,10 @@ const jobSchema = new mongoose.Schema({
         type:Date,
         default: new Date(Date.now())
     },
+    jobDescription:{
+        type:String,
+        require:[true,'Job Description is required']
+    },
     recruitedId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'user',

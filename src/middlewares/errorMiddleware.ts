@@ -4,7 +4,7 @@ const errorMiddleware :ErrorRequestHandler= async(err:any,req:Request,res:Respon
     if(err){
         console.log(err)
         return res.status(500).send({
-            error:err.message,
+            message:err.message,
             status:false
         })
     }

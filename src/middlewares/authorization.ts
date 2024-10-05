@@ -7,12 +7,12 @@ const authorizeRecruiter = catchAsyncError(async(req:UserRequest,res:Response,ne
     const cookie  = req.cookies
     console.log(cookie)
     if(!cookie) return res.status(404).send({
-        error:'Please Login',
+        message:'Please Login',
         status:false
     })
     const ISCOOKIEEXIST = cookie['jobportal']
     if(!ISCOOKIEEXIST) return res.status(404).send({
-        error:'Please Login',
+        message:'Please Login',
         status:false
     })
     const SECRET = process.env.secret||''
@@ -22,17 +22,17 @@ const authorizeRecruiter = catchAsyncError(async(req:UserRequest,res:Response,ne
     }
     catch(e){
         return res.status(404).send({
-            error:'Please Login',
+            message:'Please Login',
             status:false
         })
     }
     const user = await User.findById(id.data) 
     if(!user) return res.status(404).send({
-        error:'User does not exist',
+        message:'User does not exist',
         status:false
     })
     if(user.role!=='admin') return res.status(404).send({
-        error:'Not Authorize to post jobs',
+        message:'Not Authorize to post jobs',
         status:false
     })
     req.user = user

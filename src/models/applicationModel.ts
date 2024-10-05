@@ -12,6 +12,11 @@ const applicationSchema = new mongoose.Schema({
     resumePath:{
         type:String,
         required:[true,'resume is required']
+    },
+    status:{
+        type:String,
+        default:'pending',
+        enum:['pending','accepted','rejected']
     }
 })
 
