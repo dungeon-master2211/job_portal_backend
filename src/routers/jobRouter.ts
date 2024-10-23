@@ -5,8 +5,9 @@ import {authorizeRecruiter} from "../middlewares/authorization"
 import { authenticateUser } from "../middlewares/authenticate"
 import path from "node:path"
 import multer from "multer"
+import crypto from "crypto"
 
-
+let uid = crypto.randomUUID()
 console.log(__dirname)
 const PATH_TO_UPLOAD = path.join(__dirname,'../../uploads/')
 console.log(PATH_TO_UPLOAD)
@@ -15,6 +16,7 @@ const storage = multer.diskStorage({
       cb(null, PATH_TO_UPLOAD) // where files will be saved
     },
     filename: function (req, file, cb) {
+      file.originalname = uid+file.originalname
       cb(null, file.originalname) // using the file's original name
     }
   })

@@ -20,7 +20,27 @@ const postJobs = catchAsyncError(async(req:UserRequest,res:Response,next:NextFun
 
 // all user able to view the jobs
 const viewJobs = catchAsyncError(async(req:UserRequest,res:Response,next:NextFunction)=>{
-    const allJobs = await Job.find()
+    const query = req.query?.jobQuery || ''
+    const allJobs = await Job.find({"$or":[{companyName:{
+        "$regex":query,
+        "$options":'i'
+    }
+    },
+    {
+        jobDescription:{
+            "$regex":query,
+            "$options":'i'
+        }
+    },
+    {
+        technologies:{
+            "$regex":query,
+            "$options":'i'
+        }
+    }
+
+]
+})
     return res.status(200).send({
         jobs:allJobs,
         status:true
@@ -133,9 +153,9 @@ const applyToJob = catchAsyncError(async(req:UserRequest,res:Response,next:NextF
         message:'Already applied',
         status:false
     })
-    let uid = crypto.randomUUID()
+    
     let resumePath = req?.file.originalname
-    resumePath+=uid
+    
     const apply = await JobApplication.create({
         appliedBy,appliedTo,resumePath
     })
